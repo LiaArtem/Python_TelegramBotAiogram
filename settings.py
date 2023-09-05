@@ -7,6 +7,10 @@ class Bots:
     TELEGRAM_TOKEN: str
     TELEGRAM_ADMIN_CHAT_ID: int
     OPENWEATHERMAP_TOKEN: str
+    IS_WORK_REDIS_DB: bool
+    REDIS_HOST: str
+    REDIS_PORT: int
+    REDIS_CURS_DB_NO: int
 
 
 @dataclass
@@ -22,9 +26,13 @@ def get_settings(path: str):
         bots=Bots(
             TELEGRAM_TOKEN=env.str('TELEGRAM_TOKEN'),
             TELEGRAM_ADMIN_CHAT_ID=env.int('TELEGRAM_ADMIN_CHAT_ID'),
-            OPENWEATHERMAP_TOKEN=env.str('OPENWEATHERMAP_TOKEN')
+            OPENWEATHERMAP_TOKEN=env.str('OPENWEATHERMAP_TOKEN'),
+            IS_WORK_REDIS_DB=env.bool('IS_WORK_REDIS_DB'),
+            REDIS_HOST=env.str('REDIS_HOST'),
+            REDIS_PORT=env.int('REDIS_PORT'),
+            REDIS_CURS_DB_NO=env.int('REDIS_CURS_DB_NO')
         )
     )
 
 
-settings = get_settings('secret_key')
+settings = get_settings('settings')

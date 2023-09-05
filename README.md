@@ -1,5 +1,5 @@
 # Python_TelegramBotAiogram
-Python Telegram Bot using lib Aiogram, SQLite, Docker (exchange rates, exchange rate conversion, weather, unified register of debtors, securities)
+Python Telegram Bot using lib Aiogram, Redis, SQLite, Docker (exchange rates, exchange rate conversion, weather, unified register of debtors, securities)
 
 IDE - PyCharm Community Edition
 
@@ -13,11 +13,26 @@ IDE - PyCharm Community Edition
    - Вказуємо ім'я: LiaArtemTestBot або інше
  - Use this token to access the HTTP API:
    - Отримуємо токен, його використовуватимемо для підключення
-   - Зберігаємо токени у файл secret_key і кладемо в корінь (формат UTF8)
-     TELEGRAM_TOKEN=xxx
-     TELEGRAM_ADMIN_CHAT_ID=1111111
-     OPENWEATHERMAP_TOKEN=yyyyyy
+   - Зберігаємо токени у файл settings та settings_docker і кладемо в корінь (формат UTF8)
  - Посилання на бот - t.me/LiaArtemTestBot або інше
+
+  - Формат файлу settings
+  TELEGRAM_TOKEN=xxx
+  TELEGRAM_ADMIN_CHAT_ID=xxx
+  OPENWEATHERMAP_TOKEN=xxx
+  IS_WORK_REDIS_DB=True
+  REDIS_HOST=localhost
+  REDIS_PORT=6379
+  REDIS_CURS_DB_NO=0
+
+  - Формат файлу settings_docker
+  TELEGRAM_TOKEN=xxx
+  TELEGRAM_ADMIN_CHAT_ID=xxx
+  OPENWEATHERMAP_TOKEN=xxx
+  IS_WORK_REDIS_DB=True
+  REDIS_HOST=172.19.0.2
+  REDIS_PORT=6379
+  REDIS_CURS_DB_NO=0
 
 У командному рядку терміналу IDE
 1) Додаємо бібліотеки
@@ -27,9 +42,16 @@ IDE - PyCharm Community Edition
 -> pip install CurrencyConverter
 -> pip install requests
 -> pip install environs
+-> pip install redis
 
 Розгортання у Docker
--> Запустити .\Docker\telegrambot_docker.bat
+-> Запустити .\telegrambot_docker.bat
+-> Запустити .\!create_redis.bat
+-> Запустити .\!create_network.bat
+-> Перевірити через CMD за допомогою команди - docker network inspect telegram-bot-network
+   ID адресу серверу Redis (RedisContainer) в мережі Docker (наприклад: "IPv4Address": "172.20.0.2/16")
+   Прописуємо через Docker його у файлі /usr/src/app/settings в контейнері TelegramBotContainer
+   Якщо ID адреса не відрізняється у файлі settings_docker, то прописувати не потрібно (за замовчанням 172.19.0.2)
 
 ---------------------------------------------------
 Оновлення пакетів у IDE PyCharm Community Edition:

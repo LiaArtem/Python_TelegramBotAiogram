@@ -15,7 +15,11 @@ async def on_click_curs(message: Message, state: FSMContext):
 
     elif message.text in ('USD - Долар США', 'EUR - ЄВРО', 'GBP - Фунт стерлінгів', 'PLN - Польский злотий'):
         p = Read_curs(date.today(), message.text.upper()[0:3])
-        if p.is_request_curs:
+        if p.text_error != "":
+            await message.answer('Сервіс тимчасово не працює. Спробуйте пізніше.')
+            await on_click_global(message, state)
+
+        elif p.is_request_curs:
             await message.answer('Курс ' + message.text.upper()[0:3] + ' не найден')
         else:
             m_message = ('Курс ' + message.text.upper()[0:3] + ' (' + p.curr_name + ')' +
@@ -31,12 +35,17 @@ async def on_click_curs(message: Message, state: FSMContext):
 
 async def on_click_curs_others(message: Message, state: FSMContext):
     p = Read_curs(date.today(), message.text.upper())
-    if p.is_request_curs:
+    if p.text_error != "":
+        await message.answer('Сервіс тимчасово не працює. Спробуйте пізніше.')
+        await on_click_global(message, state)
+
+    elif p.is_request_curs:
         await message.answer('Курс ' + message.text.upper() +
                              ' не знайдений. Можна подивитись на сайті Код літерний	'
                              '- https://bank.gov.ua/ua/markets/exchangerates')
         await message.answer('Введіть новий літерний код курсу валют')
         await state.set_state(StateForm.GET_CURRENCY_OTHERS)
+
     else:
         m_message = ('Курс ' + message.text.upper() + ' (' + p.curr_name + ')' +
                      " = {:.2f}".format(p.curs_amount) + ' грн.')

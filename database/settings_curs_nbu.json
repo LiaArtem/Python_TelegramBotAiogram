@@ -3,7 +3,7 @@
     "data_format": "json",
     "curs_nbu_json": {
       "file_name": "NBU_Exchange",
-      "url": "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=%CURRCODE%&date=%MDATE%&json",
+      "url": "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date=%MDATE%&json",
       "char_curr_code": "cc",
       "char_curr_name": "txt",
       "char_curs": "rate",
