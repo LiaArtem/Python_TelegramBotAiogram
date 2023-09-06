@@ -1,3 +1,4 @@
+import logging
 import requests
 
 
@@ -30,6 +31,7 @@ class Read_erb:
                           "paging": "1", "searchType": "2"}
             else:
                 self.text_error = 'Ошибка = тип контрагента не верный = ' + str(cust_type)
+                logging.error(self.text_error)  # логирование
                 return
 
             response = requests.post(url, json=m_json)
@@ -68,10 +70,9 @@ class Read_erb:
                             self.text_result = m_buff_start + m_buff
                         else:
                             self.text_result = self.text_result + "\n" + m_buff
-                    print(self.text_result)
             else:
                 self.text_error = 'Ошибка = ' + response.text
 
         except Exception as err_curs:
             self.text_error = err_curs
-            print(self.text_error)
+            logging.error(self.text_error)  # логирование

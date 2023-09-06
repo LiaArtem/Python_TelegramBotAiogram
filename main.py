@@ -24,7 +24,7 @@ from handlers.handler_securities import on_securities_callback_message
 # main
 ########################################################
 async def main():
-    logging.basicConfig(filename='./log/filename.log', level=logging.DEBUG,
+    logging.basicConfig(filename='./log/filename.log', level=logging.WARNING,
                         format="%(asctime)s - [%(levelname)s] - %(name)s - "
                                "(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
 

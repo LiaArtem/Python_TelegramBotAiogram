@@ -3,6 +3,7 @@ import json
 import sqlite3
 import urllib.request
 import xmltodict
+import logging
 import redis
 from settings import settings
 
@@ -44,7 +45,7 @@ class Read_curs_Redis:
                 file_settings = './database/settings_curs_nbu.json'
                 if not os.path.isfile(file_settings):
                     self.text_error = "File './database/settings_curs_nbu.json' not found"
-                    print(self.text_error)
+                    logging.error(self.text_error)  # логирование
                     return
 
                 # Opening JSON file
@@ -66,7 +67,7 @@ class Read_curs_Redis:
                     char_format_date = data['main']['curs_nbu_xml']['char_format_date']
                 else:
                     self.text_error = "File 'settings_curs_nbu.json' -> parameter 'data_format' not in 'xml' or 'json'"
-                    print(self.text_error)
+                    logging.error(self.text_error)  # логирование
                     return
 
                 # Read url
@@ -108,7 +109,7 @@ class Read_curs_Redis:
 
         except Exception as err_curs:
             self.text_error = err_curs
-            print(self.text_error)
+            logging.error(self.text_error)  # логирование
 
 
 class Read_curs_SQLite:
@@ -121,7 +122,7 @@ class Read_curs_SQLite:
             file_settings = './database/settings_curs_nbu.json'
             if not os.path.isfile(file_settings):
                 self.text_error = "File './database/settings_curs_nbu.json' not found"
-                print(self.text_error)
+                logging.error(self.text_error)  # логирование
                 return
 
             # Opening JSON file
@@ -143,7 +144,7 @@ class Read_curs_SQLite:
                 char_format_date = data['main']['curs_nbu_xml']['char_format_date']
             else:
                 self.text_error = "File 'settings_curs_nbu.json' -> parameter 'data_format' not in 'xml' or 'json'"
-                print(self.text_error)
+                logging.error(self.text_error)  # логирование
                 return
 
             con = None
@@ -229,7 +230,7 @@ class Read_curs_SQLite:
             except Exception as err_curs:
                 con.close()
                 self.text_error = err_curs
-                print(self.text_error)
+                logging.error(self.text_error)  # логирование
         except Exception as err_curs:
             self.text_error = err_curs
-            print(self.text_error)
+            logging.error(self.text_error)  # логирование

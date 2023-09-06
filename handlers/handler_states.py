@@ -1,6 +1,7 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
+# состояния
 class StateForm(StatesGroup):
     GET_START = State()
     GET_CURRENCY = State()

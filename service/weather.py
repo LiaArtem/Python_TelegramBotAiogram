@@ -1,4 +1,5 @@
 import json
+import logging
 import requests
 from settings import settings
 
@@ -31,7 +32,7 @@ class Read_weather:
 
         except Exception as err_curs:
             self.text_error = err_curs
-            print(self.text_error)
+            logging.error(self.text_error)  # логирование
 
 
 def get_name_country(country_code):
@@ -291,5 +292,5 @@ def get_name_country(country_code):
         country_name = m[country_code]
     except Exception as err:
         country_name = country_code
-        print(err)
+        logging.error(err)  # логирование
     return country_name

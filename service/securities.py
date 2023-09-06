@@ -3,6 +3,7 @@ import json
 import sqlite3
 import urllib.request
 import urllib.error
+import logging
 from datetime import date
 
 
@@ -19,7 +20,7 @@ def get_name_securities_type(securities_type):
         securities_name = m[securities_type]
     except Exception as err:
         securities_name = securities_type
-        print(err)
+        logging.error(err)  # логирование
     return securities_name
 
 
@@ -185,4 +186,4 @@ class Read_ISIN_Securities:
         except Exception as err_message:
             con.close()
             self.text_error = err_message
-            print(err_message)
+            logging.error(self.text_error)  # логирование
