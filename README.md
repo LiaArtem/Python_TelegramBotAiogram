@@ -45,13 +45,14 @@ IDE - PyCharm Community Edition
 -> pip install redis
 
 Розгортання у Docker
--> Запустити .\telegrambot_docker.bat
 -> Запустити .\!create_redis.bat
+-> Запустити .\telegrambot_docker.bat
 -> Запустити .\!create_network.bat
 -> Перевірити через CMD за допомогою команди - docker network inspect telegram-bot-network
-   ID адресу серверу Redis (RedisContainer) в мережі Docker (наприклад: "IPv4Address": "172.20.0.2/16")
-   Прописуємо через Docker його у файлі /usr/src/app/settings в контейнері TelegramBotContainer
-   Якщо ID адреса не відрізняється у файлі settings_docker, то прописувати не потрібно (за замовчанням 172.19.0.2)
+   ID адресу серверу Redis (RedisContainer) в мережі Docker (наприклад: "IPv4Address": "172.18.0.2/16")
+    - Якщо IP адреса не відрізняється у файлі settings_docker, то прописувати не потрібно (за замовчанням 172.18.0.2)
+    - Якщо IP адреса відрізняється, то прописуємо її через Docker у файлі /usr/src/app/settings в контейнері TelegramBotContainer
+-> Після зміни перезапустити контейнер TelegramBotContainer
 
 ---------------------------------------------------
 Оновлення пакетів у IDE PyCharm Community Edition:
