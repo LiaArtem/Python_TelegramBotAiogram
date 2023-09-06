@@ -38,11 +38,12 @@ IDE - PyCharm Community Edition
 1) Додаємо бібліотеки
 -> pip install aiogram
 -> pip install emoji
--> pip install xmltodict
 -> pip install CurrencyConverter
 -> pip install requests
 -> pip install environs
 -> pip install redis
+-> pip install apscheduler
+-> pip install aiosqlite
 
 Розгортання у Docker
 -> Запустити .\!create_redis.bat

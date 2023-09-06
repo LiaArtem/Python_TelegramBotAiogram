@@ -1,13 +1,21 @@
 import emoji  # https://carpedm20.github.io/emoji/
+from aiogram import Bot
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
+from settings import settings
 from handlers.keyboards import reply_global_menu, reply_curs_menu, reply_convert_curs_menu
 from handlers.keyboards import reply_weather_menu, reply_erb_menu, reply_securities_menu
 from handlers.handler_states import StateForm
+from others.user_db_connect import User_DB_Request
 
 
 # событие commands=['start']
-async def command_start(message: Message, state: FSMContext):
+async def command_start(message: Message, state: FSMContext, bot: Bot, counter: str, request: User_DB_Request):
+    await request.add_data(message.from_user.id,
+                           (message.from_user.last_name + " " + message.from_user.first_name).strip())
+
+    await bot.send_message(chat_id=settings.bots.TELEGRAM_ADMIN_CHAT_ID, text=f'Счетчик запусков={counter}')
+
     await message.answer(text=f'Привіт {emoji.emojize(":grinning_face:")} <b>{message.from_user.first_name} '
                               f'{message.from_user.last_name}</b> обери пункт з головного меню.',
                          reply_markup=reply_global_menu)

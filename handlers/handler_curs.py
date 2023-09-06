@@ -14,8 +14,8 @@ async def on_click_curs(message: Message, state: FSMContext):
         await on_click_global(message, state)
 
     elif message.text in ('USD - Долар США', 'EUR - ЄВРО', 'GBP - Фунт стерлінгів', 'PLN - Польский злотий'):
-        p = Read_curs(date.today(), message.text.upper()[0:3])
-        if p.text_error != "":
+        p = await Read_curs(date.today(), message.text.upper()[0:3]).get_Read_curs()
+        if p.is_error:
             await message.answer('Сервіс тимчасово не працює. Спробуйте пізніше.')
             await on_click_global(message, state)
 
@@ -34,8 +34,8 @@ async def on_click_curs(message: Message, state: FSMContext):
 
 
 async def on_click_curs_others(message: Message, state: FSMContext):
-    p = Read_curs(date.today(), message.text.upper())
-    if p.text_error != "":
+    p = await Read_curs(date.today(), message.text.upper()).get_Read_curs()
+    if p.is_error:
         await message.answer('Сервіс тимчасово не працює. Спробуйте пізніше.')
         await on_click_global(message, state)
 
