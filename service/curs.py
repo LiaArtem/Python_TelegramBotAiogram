@@ -10,8 +10,7 @@ from settings import settings
 class Read_curs:
     def __init__(self, update_date, curr_code):
         self.update_date = update_date
-        self.curr_code = curr_code
-        self.is_request_curs = True
+        self.curr_code = curr_code        
         self.curs_amount = 0.00
         self.curr_name = ""
         self.is_error = False
@@ -24,19 +23,15 @@ class Read_curs:
                 r = redis.Redis(host=settings.bots.REDIS_HOST,
                                 port=settings.bots.REDIS_PORT,
                                 db=settings.bots.REDIS_CURS_DB_NO)
+
+                is_load_data = False
                 if await r.exists("UPDATE_DATE"):
                     update_date_db_binary = await r.get("UPDATE_DATE")
                     update_date_db = update_date_db_binary.decode('utf-8')
                     if update_date_db == self.update_date.strftime("%Y-%m-%d"):
-                        if await r.exists(self.curr_code):
-                            data = json.loads(await r.get(self.curr_code))
-                            if len(data) > 0:
-                                self.curs_amount = data["rate"]
-                                self.curr_name = data["name"]
-                                self.is_request_curs = False
-                            else:
-                                return self  # курс не найден
-                if self.is_request_curs:
+                        is_load_data = True
+                        
+                if not is_load_data:
                     # Read url
                     url = (f"https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?"
                            f"date={self.update_date.strftime('%Y%m%d')}&json")
@@ -47,21 +42,16 @@ class Read_curs:
                         m_json = {"name": json_line['txt'], "rate": json_line['rate']}
                         await pipe.set(json_line['cc'], json.dumps(m_json))
                     await pipe.execute()
-
                     await r.set("UPDATE_DATE", self.update_date.strftime("%Y-%m-%d"))
-                    # читаем снова
-                    if await r.exists("UPDATE_DATE"):
-                        update_date_db_binary = await r.get("UPDATE_DATE")
-                        update_date_db = update_date_db_binary.decode('utf-8')
-                        if update_date_db == self.update_date.strftime("%Y-%m-%d"):
-                            if await r.exists(self.curr_code):
-                                data = json.loads(await r.get(self.curr_code))
-                                if len(data) > 0:
-                                    self.curs_amount = data["rate"]
-                                    self.curr_name = data["name"]
-                                    self.is_request_curs = False
-                                else:
-                                    return self  # курс не найден
+                    
+                # читаем            
+                if await r.exists(self.curr_code):
+                    data = json.loads(await r.get(self.curr_code))
+                    if len(data) > 0:
+                        self.curs_amount = data["rate"]
+                        self.curr_name = data["name"]                        
+                    else:
+                        return self  # курс не найден
 
                 await r.close()
             except Exception as err_message:
@@ -92,7 +82,7 @@ class Read_curs:
                 await db.execute("CREATE UNIQUE INDEX IF NOT EXISTS UK_CURRENCY ON CURRENCY (CURR_CODE)")
 
                 # check curs
-                self.is_request_curs = True
+                is_request_curs = True
                 params = (self.update_date.strftime("%Y-%m-%d"), self.curr_code)
                 cursor = await db.execute("SELECT K.RATE/K.FORC AS CURS_AMOUNT, C.CURR_NAME "
                                           "FROM CURS K, CURRENCY C "
@@ -102,9 +92,9 @@ class Read_curs:
                 for row in rows:
                     self.curs_amount = float(row[0])
                     self.curr_name = row[1]
-                    self.is_request_curs = False
+                    is_request_curs = False
 
-                if self.is_request_curs:
+                if is_request_curs:
                     # Read url
                     url = (f"https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?"
                            f"date={self.update_date.strftime('%Y%m%d')}&json")
@@ -132,7 +122,6 @@ class Read_curs:
                     for row in rows:
                         self.curs_amount = float(row[0])
                         self.curr_name = row[1]
-                        self.is_request_curs = False
 
                 await db.close()
             except Exception as err_message:

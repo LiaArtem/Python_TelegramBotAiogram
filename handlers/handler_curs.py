@@ -24,7 +24,7 @@ async def on_click_curs(message: Message, state: FSMContext):
             await message.answer('Сервіс тимчасово не працює. Спробуйте пізніше.')
             await on_click_global(message, state)
 
-        elif p.is_request_curs:
+        elif p.curs_amount == 0:
             await message.answer('Курс ' + message.text.upper()[0:3] + ' не найден')
         else:
             m_message = ('Курс ' + message.text.upper()[0:3] + ' (' + p.curr_name + ')' +
@@ -45,7 +45,7 @@ async def on_click_curs_others(message: Message, bot: Bot, state: FSMContext,
         await message.answer('Сервіс тимчасово не працює. Спробуйте пізніше.')
         await on_click_global(message, state)
 
-    elif p.is_request_curs:
+    elif p.curs_amount == 0:
         await message.answer('Курс ' + message.text.upper() +
                              ' не знайдений. Можна подивитись на сайті Код літерний	'
                              '- https://bank.gov.ua/ua/markets/exchangerates')
