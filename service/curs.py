@@ -22,7 +22,8 @@ class Read_curs:
             try:
                 r = redis.Redis(host=settings.bots.REDIS_HOST,
                                 port=settings.bots.REDIS_PORT,
-                                db=settings.bots.REDIS_CURS_DB_NO)
+                                db=settings.bots.REDIS_CURS_DB_NO,
+                                password=settings.bots.REDIS_PASSWORD)
 
                 is_load_data = False
                 if await r.exists("UPDATE_DATE"):

@@ -50,14 +50,16 @@ async def main():
     #
     # create Redis storage
     if settings.bots.IS_WORK_REDIS_DB:
-        storage = RedisStorage.from_url(f'redis://{settings.bots.REDIS_HOST}:{settings.bots.REDIS_PORT}'
+        storage = RedisStorage.from_url(f'redis://default:{settings.bots.REDIS_PASSWORD}@'
+                                        f'{settings.bots.REDIS_HOST}:{settings.bots.REDIS_PORT}'
                                         f'/{settings.bots.REDIS_STORAGE_DB_NO}')
         dp = Dispatcher(storage=storage)
         job_stores = {'default': RedisJobStore(jobs_key='dispatched_trips_jobs',
                                                run_times_key='dispatched_trips_running',
                                                host=settings.bots.REDIS_HOST,
                                                port=settings.bots.REDIS_PORT,
-                                               db=settings.bots.REDIS_STORAGE_JOB_DB_NO
+                                               db=settings.bots.REDIS_STORAGE_JOB_DB_NO,
+                                               password=settings.bots.REDIS_PASSWORD
                                                )
                       }
         scheduler = ContextSchedulerDecorator(AsyncIOScheduler(timezone="Europe/Kiev", jobstores=job_stores))

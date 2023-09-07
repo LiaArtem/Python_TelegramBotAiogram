@@ -93,7 +93,8 @@ class Read_ISIN_Securities:
             try:
                 r = redis.Redis(host=settings.bots.REDIS_HOST,
                                 port=settings.bots.REDIS_PORT,
-                                db=settings.bots.REDIS_SECURITIES_DB_NO)
+                                db=settings.bots.REDIS_SECURITIES_DB_NO,
+                                password=settings.bots.REDIS_PASSWORD)
                 # main
                 is_load_data = False
                 if await r.exists("UPDATE_DATE"):

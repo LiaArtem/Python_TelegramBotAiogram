@@ -14,6 +14,7 @@ class Bots:
     REDIS_SECURITIES_DB_NO: int
     REDIS_STORAGE_DB_NO: int
     REDIS_STORAGE_JOB_DB_NO: int
+    REDIS_PASSWORD: str
 
 
 @dataclass
@@ -36,7 +37,8 @@ def get_settings(path: str):
             REDIS_CURS_DB_NO=env.int('REDIS_CURS_DB_NO'),
             REDIS_SECURITIES_DB_NO=env.int('REDIS_SECURITIES_DB_NO'),
             REDIS_STORAGE_DB_NO=env.int('REDIS_STORAGE_DB_NO'),
-            REDIS_STORAGE_JOB_DB_NO=env.int('REDIS_STORAGE_JOB_DB_NO')
+            REDIS_STORAGE_JOB_DB_NO=env.int('REDIS_STORAGE_JOB_DB_NO'),
+            REDIS_PASSWORD=env.str('REDIS_PASSWORD')
         )
     )
 

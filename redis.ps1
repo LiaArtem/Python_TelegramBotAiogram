@@ -1,1 +1,1 @@
-docker run --name RedisContainer --restart=always -p 6379:6379 -d redis:latest
+docker run --name RedisContainer --restart=always -p 6379:6379 -d redis:latest redis-server --requirepass !Aa112233
