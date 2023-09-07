@@ -26,6 +26,7 @@ RUN pip install environs
 RUN pip install redis
 RUN pip install apscheduler
 RUN pip install aiosqlite
+RUN pip install apscheduler-di
 
 
 # run app

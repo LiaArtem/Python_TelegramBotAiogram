@@ -43,8 +43,8 @@ async def on_click_securities(message: Message, state: FSMContext):
 
 
 async def on_securities_type(message: Message, state: FSMContext, securities_type: str):
-    p = Read_ISIN_Securities(securities_type, "UAH", "", False)
-    if p.text_error == "":
+    p = await Read_ISIN_Securities(securities_type, "UAH", "", False).get_Read_ISIN_Securities()
+    if not p.is_error:
         if p.text_result == "":
             m_message = 'Цінні папери ISIN у UAH (' + message.text + ') не знайдені.'
             await message.answer(text=m_message, reply_markup=reply_securities_menu)
@@ -64,8 +64,8 @@ async def on_securities_type(message: Message, state: FSMContext, securities_typ
 
 
 async def on_click_securities_others(message: Message, state: FSMContext):
-    p = Read_ISIN_Securities("", "", message.text.upper().strip(), True)
-    if p.text_error == "":
+    p = await Read_ISIN_Securities("", "", message.text.upper().strip(), True).get_Read_ISIN_Securities()
+    if not p.is_error:
         if p.text_result == "":
             m_message = 'Цінні папери ISIN = ' + message.text.upper().strip() + ' не знайдені.'
             await message.answer(text=m_message, reply_markup=reply_securities_menu)
@@ -87,8 +87,8 @@ async def on_click_securities_others(message: Message, state: FSMContext):
 async def on_securities_callback_message(call: CallbackQuery, state: FSMContext):
     content_data = await state.get_data()
     securities_type = content_data.get("securities_type")
-    p = Read_ISIN_Securities(securities_type, call.data.upper()[-3:], "", False)
-    if p.text_error == "":
+    p = await Read_ISIN_Securities(securities_type, call.data.upper()[-3:], "", False).get_Read_ISIN_Securities()
+    if not p.is_error:
         if p.text_result == "":
             m_message = ('Цінні папери у ' + call.data.upper()[-3:] + ' (' +
                          get_name_securities_type(securities_type) + ') не знайдені.')

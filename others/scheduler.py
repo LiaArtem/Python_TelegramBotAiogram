@@ -15,3 +15,8 @@ async def message_day(bot: Bot):
 # отправление сообщения периодично через интервал
 async def message_interval(bot: Bot):
     await bot.send_message(chat_id=settings.bots.TELEGRAM_ADMIN_CHAT_ID, text='Message INTERVAL!')
+
+
+# отправление сообщения через middleware
+async def message_middleware(bot: Bot, chat_id: int):
+    await bot.send_message(chat_id=chat_id, text='Message Middleware!')

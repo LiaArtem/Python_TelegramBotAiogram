@@ -11,6 +11,9 @@ class Bots:
     REDIS_HOST: str
     REDIS_PORT: int
     REDIS_CURS_DB_NO: int
+    REDIS_SECURITIES_DB_NO: int
+    REDIS_STORAGE_DB_NO: int
+    REDIS_STORAGE_JOB_DB_NO: int
 
 
 @dataclass
@@ -30,7 +33,10 @@ def get_settings(path: str):
             IS_WORK_REDIS_DB=env.bool('IS_WORK_REDIS_DB'),
             REDIS_HOST=env.str('REDIS_HOST'),
             REDIS_PORT=env.int('REDIS_PORT'),
-            REDIS_CURS_DB_NO=env.int('REDIS_CURS_DB_NO')
+            REDIS_CURS_DB_NO=env.int('REDIS_CURS_DB_NO'),
+            REDIS_SECURITIES_DB_NO=env.int('REDIS_SECURITIES_DB_NO'),
+            REDIS_STORAGE_DB_NO=env.int('REDIS_STORAGE_DB_NO'),
+            REDIS_STORAGE_JOB_DB_NO=env.int('REDIS_STORAGE_JOB_DB_NO')
         )
     )
 

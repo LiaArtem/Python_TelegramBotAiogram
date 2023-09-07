@@ -19,6 +19,7 @@ class Read_curs:
     async def get_Read_curs(self):
         # db Redis
         if settings.bots.IS_WORK_REDIS_DB:
+            r = None
             try:
                 r = redis.Redis(host=settings.bots.REDIS_HOST,
                                 port=settings.bots.REDIS_PORT,
@@ -64,10 +65,13 @@ class Read_curs:
 
                 await r.close()
             except Exception as err_message:
+                if r is not None:
+                    await r.close()
                 self.is_error = True
                 logging.error(err_message)  # логирование
         else:
             # db SQLite
+            db = None
             try:
                 # connect sqlite3
                 db = await aiosqlite.connect("./database/currency.db")
@@ -132,6 +136,8 @@ class Read_curs:
 
                 await db.close()
             except Exception as err_message:
+                if db is not None:
+                    await db.close()
                 self.is_error = True
                 logging.error(err_message)  # логирование
 

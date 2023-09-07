@@ -13,26 +13,9 @@ IDE - PyCharm Community Edition
    - Вказуємо ім'я: LiaArtemTestBot або інше
  - Use this token to access the HTTP API:
    - Отримуємо токен, його використовуватимемо для підключення
-   - Зберігаємо токени у файл settings та settings_docker і кладемо в корінь (формат UTF8)
+   - Зберігаємо токени у файл settings кладемо в корінь (формат UTF8) (Формат файлу settings в прикладі settings_example)
+   - Им'я файлу повинно бути: settings
  - Посилання на бот - t.me/LiaArtemTestBot або інше
-
-  - Формат файлу settings
-  TELEGRAM_TOKEN=xxx
-  TELEGRAM_ADMIN_CHAT_ID=xxx
-  OPENWEATHERMAP_TOKEN=xxx
-  IS_WORK_REDIS_DB=True
-  REDIS_HOST=localhost
-  REDIS_PORT=6379
-  REDIS_CURS_DB_NO=0
-
-  - Формат файлу settings_docker
-  TELEGRAM_TOKEN=xxx
-  TELEGRAM_ADMIN_CHAT_ID=xxx
-  OPENWEATHERMAP_TOKEN=xxx
-  IS_WORK_REDIS_DB=True
-  REDIS_HOST=172.19.0.2
-  REDIS_PORT=6379
-  REDIS_CURS_DB_NO=0
 
 У командному рядку терміналу IDE
 1) Додаємо бібліотеки
@@ -44,6 +27,7 @@ IDE - PyCharm Community Edition
 -> pip install redis
 -> pip install apscheduler
 -> pip install aiosqlite
+-> pip install apscheduler-di
 
 Розгортання у Docker
 -> Запустити .\!create_redis.bat
