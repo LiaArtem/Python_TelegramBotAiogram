@@ -3,6 +3,10 @@ Python Telegram Bot using lib Aiogram, Redis, SQLite, Docker (exchange rates, ex
 
 IDE - PyCharm Community Edition
 
+- Перевірка якості кода ruff check
+-> pip install ruff
+-> ruff check .
+
 Налаштування:
  - Відкрийте Telegram
  - Знайдіть @BotFather і почніть розмову.

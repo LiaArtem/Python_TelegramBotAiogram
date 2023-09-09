@@ -18,7 +18,8 @@ async def on_click_curs(message: Message, state: FSMContext):
         # Возврат в главное меню
         await on_click_global(message, state)
 
-    elif message.text in ('USD - Долар США', 'EUR - ЄВРО', 'GBP - Фунт стерлінгів', 'PLN - Польский злотий'):
+    elif message.text in ('USD - Долар США', 'EUR - ЄВРО',
+                          'GBP - Фунт стерлінгів', 'PLN - Польский злотий'):
         p = await Read_curs(date.today(), message.text.upper()[0:3]).get_Read_curs()
         if p.is_error:
             await message.answer('Сервіс тимчасово не працює. Спробуйте пізніше.')
@@ -27,7 +28,8 @@ async def on_click_curs(message: Message, state: FSMContext):
         elif p.curs_amount == 0:
             await message.answer('Курс ' + message.text.upper()[0:3] + ' не найден')
         else:
-            m_message = ('Курс ' + message.text.upper()[0:3] + ' (' + p.curr_name + ')' +
+            m_message = ('Курс ' + message.text.upper()[0:3] +
+                         ' (' + p.curr_name + ')' +
                          " = {:.2f}".format(p.curs_amount) + ' грн.')
             # вызов меню курсов для повторного выбора
             await message.answer(text=m_message, reply_markup=reply_curs_menu)
@@ -38,8 +40,10 @@ async def on_click_curs(message: Message, state: FSMContext):
         await state.set_state(StateForm.GET_CURRENCY_OTHERS)
 
 
-async def on_click_curs_others(message: Message, bot: Bot, state: FSMContext,
-                               apscheduler: AsyncIOScheduler,  apscheduler_di: ContextSchedulerDecorator):
+async def on_click_curs_others(message: Message, bot: Bot,
+                               state: FSMContext,
+                               apscheduler: AsyncIOScheduler,
+                               apscheduler_di: ContextSchedulerDecorator):
     p = await Read_curs(date.today(), message.text.upper()).get_Read_curs()
     if p.is_error:
         await message.answer('Сервіс тимчасово не працює. Спробуйте пізніше.')
@@ -57,10 +61,12 @@ async def on_click_curs_others(message: Message, bot: Bot, state: FSMContext,
 
         # отправка сообщения через 10 сек
         if settings.bots.IS_WORK_REDIS_DB:
-            apscheduler_di.add_job(message_middleware, trigger='date', run_date=datetime.now() + timedelta(seconds=10),
+            apscheduler_di.add_job(message_middleware, trigger='date',
+                                   run_date=datetime.now() + timedelta(seconds=10),
                                    kwargs={'chat_id': message.from_user.id})
         else:
-            apscheduler.add_job(message_middleware, trigger='date', run_date=datetime.now() + timedelta(seconds=10),
+            apscheduler.add_job(message_middleware, trigger='date',
+                                run_date=datetime.now() + timedelta(seconds=10),
                                 kwargs={'bot': bot, 'chat_id': message.from_user.id})
 
         # вызов меню курсов для повторного выбора

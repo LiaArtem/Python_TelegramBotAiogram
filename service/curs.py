@@ -10,7 +10,7 @@ from settings import settings
 class Read_curs:
     def __init__(self, update_date, curr_code):
         self.update_date = update_date
-        self.curr_code = curr_code        
+        self.curr_code = curr_code
         self.curs_amount = 0.00
         self.curr_name = ""
         self.is_error = False
@@ -31,7 +31,7 @@ class Read_curs:
                     update_date_db = update_date_db_binary.decode('utf-8')
                     if update_date_db == self.update_date.strftime("%Y-%m-%d"):
                         is_load_data = True
-                        
+
                 if not is_load_data:
                     # Read url
                     url = (f"https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?"
@@ -44,13 +44,13 @@ class Read_curs:
                         await pipe.set(json_line['cc'], json.dumps(m_json))
                     await pipe.execute()
                     await r.set("UPDATE_DATE", self.update_date.strftime("%Y-%m-%d"))
-                    
+
                 # читаем            
                 if await r.exists(self.curr_code):
                     data = json.loads(await r.get(self.curr_code))
                     if len(data) > 0:
                         self.curs_amount = data["rate"]
-                        self.curr_name = data["name"]                        
+                        self.curr_name = data["name"]
                     else:
                         return self  # курс не найден
 
@@ -74,21 +74,25 @@ class Read_curs:
                                  FORC INTEGER NOT NULL CHECK(FORC > 0)
                                  )
                             """)
-                await db.execute("CREATE UNIQUE INDEX IF NOT EXISTS UK_CURS ON CURS (CURS_DATE, CURR_CODE)")
+                await db.execute("CREATE UNIQUE INDEX IF NOT EXISTS "
+                                 "UK_CURS ON CURS (CURS_DATE, CURR_CODE)")
 
                 await db.execute("""CREATE TABLE IF NOT EXISTS CURRENCY
                                 (CURR_CODE TEXT NOT NULL,
                                  CURR_NAME TEXT)
                             """)
-                await db.execute("CREATE UNIQUE INDEX IF NOT EXISTS UK_CURRENCY ON CURRENCY (CURR_CODE)")
+                await db.execute("CREATE UNIQUE INDEX IF NOT EXISTS "
+                                 "UK_CURRENCY ON CURRENCY (CURR_CODE)")
 
                 # check curs
                 is_request_curs = True
                 params = (self.update_date.strftime("%Y-%m-%d"), self.curr_code)
-                cursor = await db.execute("SELECT K.RATE/K.FORC AS CURS_AMOUNT, C.CURR_NAME "
-                                          "FROM CURS K, CURRENCY C "
-                                          "WHERE K.CURR_CODE = C.CURR_CODE AND K.CURS_DATE = ? AND K.CURR_CODE = ?",
-                                          params)
+                cursor = await db.execute(
+                    "SELECT K.RATE/K.FORC AS CURS_AMOUNT, C.CURR_NAME "
+                    "FROM CURS K, CURRENCY C "
+                    "WHERE K.CURR_CODE = C.CURR_CODE "
+                    "AND K.CURS_DATE = ? AND K.CURR_CODE = ?",
+                    params)
                 rows = await cursor.fetchall()
                 for row in rows:
                     self.curs_amount = float(row[0])
@@ -107,18 +111,23 @@ class Read_curs:
                                   json_line['rate'],
                                   1)
                         await db.execute(
-                            "INSERT OR IGNORE INTO CURRENCY(curr_code, curr_name) VALUES(?, ?)",
+                            "INSERT OR IGNORE INTO CURRENCY"
+                            "(curr_code, curr_name) "
+                            "VALUES(?, ?)",
                             (json_line['cc'], json_line['txt']))
                         await db.execute(
-                            "INSERT OR IGNORE INTO CURS(curs_date, curr_code, rate, forc) VALUES(?, ?, ?, ?)",
-                            params)
+                            "INSERT OR IGNORE INTO CURS"
+                            "(curs_date, curr_code, rate, forc) "
+                            "VALUES(?, ?, ?, ?)", params)
                         await db.commit()
                     # read new curs
                     params = (self.update_date.strftime("%Y-%m-%d"), self.curr_code)
-                    cursor = await db.execute("SELECT K.RATE/K.FORC AS CURS_AMOUNT, C.CURR_NAME "
-                                              "FROM CURS K, CURRENCY C "
-                                              "WHERE K.CURR_CODE = C.CURR_CODE AND K.CURS_DATE = ? AND K.CURR_CODE = ?",
-                                              params)
+                    cursor = await db.execute(
+                        "SELECT K.RATE/K.FORC AS CURS_AMOUNT, C.CURR_NAME "
+                        "FROM CURS K, CURRENCY C "
+                        "WHERE K.CURR_CODE = C.CURR_CODE AND K.CURS_DATE = ? "
+                        "AND K.CURR_CODE = ?",
+                        params)
                     rows = await cursor.fetchall()
                     for row in rows:
                         self.curs_amount = float(row[0])

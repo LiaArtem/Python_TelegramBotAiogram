@@ -52,10 +52,12 @@ def get_str_isin_from_json(m_json, m_fair_json, m_is_coup_period: bool):
                 fair_value = "--"
             else:
                 if (m_fair_json.get('fair_date') is None or
-                        m_fair_json.get('fair_date') == datetime.now().strftime("%Y-%m-%d")):
+                        m_fair_json.get('fair_date') ==
+                        datetime.now().strftime("%Y-%m-%d")):
                     fair_value = str(m_fair_json.get('fair_value'))
                 else:
-                    fair_value = str(m_fair_json.get('fair_value')) + " за " + str(m_fair_json.get('fair_date'))
+                    fair_value = (str(m_fair_json.get('fair_value')) + " за "
+                                  + str(m_fair_json.get('fair_date')))
         else:
             fair_value = "--"
 
@@ -72,7 +74,9 @@ def get_str_isin_from_json(m_json, m_fair_json, m_is_coup_period: bool):
                 if num == 0:
                     buff = buff + "Купонні періоди:" + "\n"
                 if coup.get('pay_type') == '1':
-                    buff = buff + "- " + str(coup.get('pay_date')) + " = " + str(coup.get('pay_val')) + "\n"
+                    buff = (buff + "- " +
+                            str(coup.get('pay_date')) + " = "
+                            + str(coup.get('pay_val')) + "\n")
     return buff
 
 
@@ -110,8 +114,9 @@ class Read_ISIN_Securities:
                     pipe = await r.pipeline()
                     for num, json_line in enumerate(json.loads(data.decode('utf-8'))):
                         await pipe.set(json_line['cpcode'], json.dumps(json_line))
-                        key = ('TYPE_' + str(get_code_securities_type(json_line['cpdescr'])) +
-                               '_' + json_line['val_code'])
+                        key = ('TYPE_' +
+                               str(get_code_securities_type(json_line['cpdescr']))
+                               + '_' + json_line['val_code'])
 
                         if len(mas) == 0:
                             dr = {key: {json_line['cpcode']}}
@@ -150,8 +155,9 @@ class Read_ISIN_Securities:
 
                 if not is_load_data:
                     try:
-                        url = "https://bank.gov.ua/files/Fair_value/" + datetime.now().strftime(
-                            "%Y%m") + "/" + datetime.now().strftime("%Y%m%d") + "_fv.txt"
+                        url = ("https://bank.gov.ua/files/Fair_value/" +
+                               datetime.now().strftime("%Y%m") + "/"
+                               + datetime.now().strftime("%Y%m%d") + "_fv.txt")
                         response = urllib.request.urlopen(url)
                         lines = [line.decode('cp1251') for line in response.readlines()]
                         cr = csv.reader(lines)
@@ -164,7 +170,8 @@ class Read_ISIN_Securities:
                                       "fair_value": float(split_data[3])}
                             await pipe.set(split_data[1] + '_FAIR', json.dumps(m_json))
                         await pipe.execute()
-                        await r.set("UPDATE_DATE_FAIR", datetime.now().strftime("%Y-%m-%d"))
+                        await r.set("UPDATE_DATE_FAIR",
+                                    datetime.now().strftime("%Y-%m-%d"))
                     except urllib.error.HTTPError as e:
                         if e.code != 404:
                             raise
@@ -177,7 +184,8 @@ class Read_ISIN_Securities:
                         data_fair = None
                         if await r.exists(key + '_FAIR'):
                             data_fair = json.loads(await r.get(key + '_FAIR'))
-                        self.text_result = get_str_isin_from_json(data, data_fair, self.is_coup_period)
+                        self.text_result = get_str_isin_from_json(data, data_fair,
+                                                                  self.is_coup_period)
                     else:
                         return self  # не найдено
                 else:
@@ -192,8 +200,10 @@ class Read_ISIN_Securities:
                                 data_fair = None
                                 if await r.exists(isin + '_FAIR'):
                                     data_fair = json.loads(await r.get(isin + '_FAIR'))
-                                self.text_result = (self.text_result + "\n" +
-                                                    get_str_isin_from_json(data, data_fair, self.is_coup_period))
+                                self.text_result = (
+                                        self.text_result + "\n" +
+                                        get_str_isin_from_json(data, data_fair,
+                                                               self.is_coup_period))
                     else:
                         return self  # не найдено
 
@@ -209,36 +219,46 @@ class Read_ISIN_Securities:
             try:
                 # connect sqlite3
                 db = await aiosqlite.connect("./database/securities.db")
-                await db.execute("""CREATE TABLE IF NOT EXISTS SECUR_ISIN
-                                (ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,                               
-                                 ISIN TEXT NOT NULL,
-                                 NOMINAL INTEGER NOT NULL,
-                                 AUK_PROC REAL NOT NULL,
-                                 PGS_DATE INTEGER NOT NULL,
-                                 CPDESCR TEXT NOT NULL,
-                                 CURRENCY_CODE TEXT NOT NULL,
-                                 SDATE INTEGER NOT NULL,
-                                 FAIR_DATE INTEGER,
-                                 FAIR_VALUE REAL
-                                 )
-                            """)
-                await db.execute("CREATE UNIQUE INDEX IF NOT EXISTS UK_SECUR_ISIN ON SECUR_ISIN (ISIN)")
+                await db.execute(
+                    """CREATE TABLE IF NOT EXISTS SECUR_ISIN
+                        (ID INTEGER PRIMARY KEY 
+                        AUTOINCREMENT NOT NULL,                               
+                         ISIN TEXT NOT NULL,
+                         NOMINAL INTEGER NOT NULL,
+                         AUK_PROC REAL NOT NULL,
+                         PGS_DATE INTEGER NOT NULL,
+                         CPDESCR TEXT NOT NULL,
+                         CURRENCY_CODE TEXT NOT NULL,
+                         SDATE INTEGER NOT NULL,
+                         FAIR_DATE INTEGER,
+                         FAIR_VALUE REAL
+                         )""")
+                await db.execute(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS "
+                    "UK_SECUR_ISIN ON SECUR_ISIN (ISIN)")
 
-                await db.execute("""CREATE TABLE IF NOT EXISTS SECUR_ISIN_PAY
-                                (ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,                               
-                                 ISIN_SECUR_ID INTEGER NOT NULL,
-                                 PAY_DATE INTEGER NOT NULL,
-                                 PAY_TYPE INTEGER NOT NULL,
-                                 PAY_VAL REAL NOT NULL,
-                                 FOREIGN KEY(ISIN_SECUR_ID) REFERENCES SECUR_ISIN(ID)                           
-                                 )
-                            """)
-                await db.execute("CREATE UNIQUE INDEX IF NOT EXISTS UK_SECUR_ISIN_PAY ON SECUR_ISIN_PAY "
-                                 "(ISIN_SECUR_ID,PAY_DATE, PAY_TYPE)")
+                await db.execute(
+                    """CREATE TABLE IF NOT EXISTS SECUR_ISIN_PAY
+                    (ID INTEGER PRIMARY KEY 
+                    AUTOINCREMENT NOT NULL,                               
+                     ISIN_SECUR_ID INTEGER NOT NULL,
+                     PAY_DATE INTEGER NOT NULL,
+                     PAY_TYPE INTEGER NOT NULL,
+                     PAY_VAL REAL NOT NULL,
+                     FOREIGN KEY(ISIN_SECUR_ID) 
+                     REFERENCES SECUR_ISIN(ID)                           
+                     )""")
+                await db.execute(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS UK_SECUR_ISIN_PAY "
+                    "ON SECUR_ISIN_PAY "
+                    "(ISIN_SECUR_ID,PAY_DATE, PAY_TYPE)")
 
-                # проверяем есть ли обновленные данные по ISIN ЦБ за текущий день, если нет перезаливаем
+                # проверяем есть ли обновленные данные по ISIN ЦБ
+                # за текущий день, если нет перезаливаем
                 params = (datetime.now().strftime("%Y-%m-%d"),)
-                cursor = await db.execute("SELECT COUNT(*) AS KOL FROM SECUR_ISIN S WHERE S.SDATE = ?", params)
+                cursor = await db.execute(
+                    "SELECT COUNT(*) AS KOL FROM SECUR_ISIN S "
+                    "WHERE S.SDATE = ?", params)
                 rows = await cursor.fetchone()
                 # если нет данных загрузить их
                 if rows[0] == 0:
@@ -248,7 +268,8 @@ class Read_ISIN_Securities:
                         # возвращаем ID
                         params = (json_line['cpcode'],)
                         cursor = await db.execute(
-                            "SELECT COUNT(*) AS KOL, MAX(ID) AS ID FROM SECUR_ISIN S WHERE S.ISIN = ?", params)
+                            "SELECT COUNT(*) AS KOL, MAX(ID) AS ID "
+                            "FROM SECUR_ISIN S WHERE S.ISIN = ?", params)
                         rows = await cursor.fetchone()
                         if rows[0] == 0:
                             params = (json_line['cpcode'],
@@ -260,12 +281,14 @@ class Read_ISIN_Securities:
                                       datetime.now().strftime("%Y-%m-%d")
                                       )
                             await db.execute(
-                                'INSERT INTO SECUR_ISIN(ISIN, NOMINAL, AUK_PROC, PGS_DATE, CPDESCR, CURRENCY_CODE, '
-                                'SDATE) VALUES(?, ?, ?, ?, ?, ?, ?)', params)
+                                'INSERT INTO SECUR_ISIN(ISIN, NOMINAL, AUK_PROC, '
+                                'PGS_DATE, CPDESCR, CURRENCY_CODE, SDATE) '
+                                'VALUES(?, ?, ?, ?, ?, ?, ?)', params)
 
                             params = (json_line['cpcode'],)
                             cursor = await db.execute(
-                                "SELECT COUNT(*) AS KOL, MAX(ID) AS ID FROM SECUR_ISIN S WHERE S.ISIN = ?",
+                                "SELECT COUNT(*) AS KOL, MAX(ID) AS ID "
+                                "FROM SECUR_ISIN S WHERE S.ISIN = ?",
                                 params)
                             rows = await cursor.fetchone()
                             inserted_id = rows[1]
@@ -274,7 +297,8 @@ class Read_ISIN_Securities:
                             params = (datetime.now().strftime("%Y-%m-%d"),
                                       inserted_id)
                             await db.execute(
-                                'UPDATE SECUR_ISIN SET SDATE = ? WHERE ID = ?', params)
+                                'UPDATE SECUR_ISIN SET SDATE = ? '
+                                'WHERE ID = ?', params)
 
                         # купонные периоды
                         for json_line2 in json_line['payments']:
@@ -284,18 +308,22 @@ class Read_ISIN_Securities:
                                       json_line2['pay_val']
                                       )
                             await db.execute(
-                                "INSERT OR IGNORE INTO SECUR_ISIN_PAY(ISIN_SECUR_ID, PAY_DATE, PAY_TYPE, PAY_VAL) "
+                                "INSERT OR IGNORE INTO SECUR_ISIN_PAY"
+                                "(ISIN_SECUR_ID, PAY_DATE, PAY_TYPE, PAY_VAL) "
                                 "VALUES(?, ?, ?, ?)", params)
 
                 # Справедливая стоимость ЦБ (котировки НБУ)
                 params = (datetime.now().strftime("%Y-%m-%d"),)
-                cursor = await db.execute("SELECT COUNT(*) AS KOL FROM SECUR_ISIN S WHERE S.FAIR_DATE = ?", params)
+                cursor = await db.execute(
+                    "SELECT COUNT(*) AS KOL FROM SECUR_ISIN S "
+                    "WHERE S.FAIR_DATE = ?", params)
                 rows = await cursor.fetchone()
                 # если нет данных загрузить их и обновить
                 if rows[0] == 0:
                     try:
-                        url = "https://bank.gov.ua/files/Fair_value/" + datetime.now().strftime(
-                            "%Y%m") + "/" + datetime.now().strftime("%Y%m%d") + "_fv.txt"
+                        url = ("https://bank.gov.ua/files/Fair_value/" +
+                               datetime.now().strftime("%Y%m") + "/" +
+                               datetime.now().strftime("%Y%m%d") + "_fv.txt")
                         response = urllib.request.urlopen(url)
                         lines = [line.decode('cp1251') for line in response.readlines()]
                         cr = csv.reader(lines)
@@ -307,7 +335,8 @@ class Read_ISIN_Securities:
                                       float(split_data[3]),
                                       split_data[1])
                             await db.execute(
-                                'UPDATE SECUR_ISIN SET FAIR_DATE = ?, FAIR_VALUE = ? WHERE ISIN = ?', params)
+                                'UPDATE SECUR_ISIN SET FAIR_DATE = ?, FAIR_VALUE = ? '
+                                'WHERE ISIN = ?', params)
                     except urllib.error.HTTPError as e:
                         if e.code != 404:
                             raise
@@ -316,22 +345,26 @@ class Read_ISIN_Securities:
                     securities_name = get_name_securities_type(self.securities_type)
                     params = (securities_name, self.curr_code)
                     if securities_name.find("%") >= 0:
-                        cursor = await db.execute("SELECT * FROM SECUR_ISIN S WHERE S.CPDESCR like ? AND "
-                                                  "S.CURRENCY_CODE = ?", params)
+                        cursor = await db.execute(
+                            "SELECT * FROM SECUR_ISIN S WHERE S.CPDESCR like ? AND "
+                            "S.CURRENCY_CODE = ?", params)
                     else:
-                        cursor = await db.execute("SELECT * FROM SECUR_ISIN S WHERE S.CPDESCR = ? AND S.CURRENCY_CODE "
-                                                  "= ?", params)
+                        cursor = await db.execute(
+                            "SELECT * FROM SECUR_ISIN S WHERE S.CPDESCR = ? "
+                            "AND S.CURRENCY_CODE = ?", params)
                     rows = await cursor.fetchall()
                 else:
                     params = (self.securities_isin,)
-                    cursor = await db.execute("SELECT * FROM SECUR_ISIN S WHERE S.ISIN = ?", params)
+                    cursor = await db.execute(
+                        "SELECT * FROM SECUR_ISIN S WHERE S.ISIN = ?", params)
                     rows = await cursor.fetchall()
                 buff = ""
                 for row_count, row in enumerate(rows):
                     if row[9] is None:
                         fair_value = "--"
                     else:
-                        if row[8] is None or row[8] == datetime.now().strftime("%Y-%m-%d"):
+                        if (row[8] is None or
+                                row[8] == datetime.now().strftime("%Y-%m-%d")):
                             fair_value = str(row[9])
                         else:
                             fair_value = str(row[9]) + " за " + str(row[8])
@@ -346,14 +379,16 @@ class Read_ISIN_Securities:
                     if self.is_coup_period:
                         params = (row[0],)
                         cursor = await db.execute(
-                            "SELECT * FROM SECUR_ISIN_PAY S WHERE S.ISIN_SECUR_ID = ? AND S.PAY_TYPE = 1 "
+                            "SELECT * FROM SECUR_ISIN_PAY S WHERE S.ISIN_SECUR_ID = ? "
+                            "AND S.PAY_TYPE = 1 "
                             "ORDER BY S.PAY_DATE",
                             params)
                         rows2 = await cursor.fetchall()
                         if rows2 is not None:
                             buff = buff + "Купонні періоди:" + "\n"
                         for row2 in rows2:
-                            buff = buff + "- " + str(row2[2]) + " = " + str(row2[4]) + "\n"
+                            buff = (buff + "- " + str(row2[2]) + " = "
+                                    + str(row2[4]) + "\n")
                     buff = buff + "\n"
 
                 await db.commit()

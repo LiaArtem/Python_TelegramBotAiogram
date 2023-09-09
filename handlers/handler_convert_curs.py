@@ -14,8 +14,9 @@ async def on_click_convert_curs(message: Message, state: FSMContext):
 
     elif message.text.count('->') > 0:
         p = message.text.split('->')
+        # сохраняем коды валют для конвертации
         await state.update_data(convert_code_from=p[0].strip(),
-                                convert_code_to=p[1].strip())  # сохраняем коды валют для конвертации
+                                convert_code_to=p[1].strip())
         #
         await message.answer('Введіть суму')
         await state.set_state(StateForm.GET_CONVERT_CURRENCY_AMOUNT)
@@ -39,7 +40,8 @@ async def on_click_convert_curs_amount(message: Message, state: FSMContext):
         convert_code_to = content_data.get("convert_code_to")
         cc = Read_convert_curs(amount, convert_code_from, convert_code_to)
         if cc.text_error != "":
-            m_message = 'Конвертація пройшла з помилкою, можливо введені неправильні коди валют'
+            m_message = ('Конвертація пройшла з помилкою, можливо введені '
+                         'неправильні коди валют')
             await message.answer(text=m_message, reply_markup=reply_convert_curs_menu)
             await state.set_state(StateForm.GET_CONVERT_CURRENCY)
             return
@@ -58,12 +60,14 @@ async def on_click_convert_curs_others(message: Message, state: FSMContext):
     try:
         m = message.text.strip().upper()
         p = m.split('/')
+        # сохраняем коды валют для конвертации
         await state.update_data(convert_code_from=p[0].strip(),
-                                convert_code_to=p[1].strip())  # сохраняем коды валют для конвертации
+                                convert_code_to=p[1].strip())
         #
         await message.answer('Введіть сумму')
         await state.set_state(StateForm.GET_CONVERT_CURRENCY_AMOUNT)
     except Exception as err_message:
-        await message.answer('Введені некорректні коди валют для конвертації (наприклад USD/EUR)')
+        await message.answer('Введені некорректні коди валют для конвертації '
+                             '(наприклад USD/EUR)')
         await state.set_state(StateForm.GET_CONVERT_CURRENCY_OTHERS)
         print(err_message)

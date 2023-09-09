@@ -8,7 +8,9 @@ class Read_convert_curs:
         self.text_error = ""
         try:
             curr_converter = CurrencyConverter()
-            self.curs_amount = curr_converter.convert(amount, curr_code_from, curr_code_to)
+            self.curs_amount = curr_converter.convert(amount,
+                                                      curr_code_from,
+                                                      curr_code_to)
         except Exception as err:
             self.text_error = err
             logging.error(self.text_error)  # логирование

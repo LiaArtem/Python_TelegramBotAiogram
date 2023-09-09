@@ -13,15 +13,20 @@ reply_global_menu = ReplyKeyboardMarkup(
     selective=True,
     keyboard=[
         [
-            KeyboardButton(text=f'{emoji.emojize(":money_bag:")} Курси валют'),
-            KeyboardButton(text=f'{emoji.emojize(":currency_exchange:")} Конвертер валют')
+            KeyboardButton(text=f'{emoji.emojize(":money_bag:")}'
+                                f' Курси валют'),
+            KeyboardButton(text=f'{emoji.emojize(":currency_exchange:")}'
+                                f' Конвертер валют')
         ],
         [
-            KeyboardButton(text=f'{emoji.emojize(":rolled-up_newspaper:")} Цінні папери'),
-            KeyboardButton(text=f'{emoji.emojize(":check_box_with_check:")} Виконавчі провадження'),
+            KeyboardButton(text=f'{emoji.emojize(":rolled-up_newspaper:")}'
+                                f' Цінні папери'),
+            KeyboardButton(text=f'{emoji.emojize(":check_box_with_check:")}'
+                                f' Виконавчі провадження'),
         ],
         [
-            KeyboardButton(text=f'{emoji.emojize(":sun_behind_small_cloud:")} Погода')
+            KeyboardButton(text=f'{emoji.emojize(":sun_behind_small_cloud:")}'
+                                f' Погода')
         ]
     ])
 

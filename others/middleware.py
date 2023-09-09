@@ -26,7 +26,8 @@ class CounterMiddleware(BaseMiddleware):
 
 # рабочий день с ПН-ПТ, с 8:00 по 19:00
 def work_time() -> bool:
-    return datetime.now().weekday() in (0, 1, 2, 3, 4) and datetime.now().hour in [i for i in (range(7, 22))]
+    return (datetime.now().weekday() in (0, 1, 2, 3, 4) and
+            datetime.now().hour in [i for i in (range(7, 22))])
 
 
 # пишет пользователю сообщение если рабочее время истекло
